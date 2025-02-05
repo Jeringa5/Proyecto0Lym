@@ -119,6 +119,7 @@ def parse_instruccion(fila):
 with open('robot_program.txt', 'r') as file:
     archivo = file.readlines()
 
+
 # Verificar la sintaxis del programa del robot
 if parse(archivo):
     print("La sintaxis es correcta")
