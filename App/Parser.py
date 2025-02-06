@@ -3,7 +3,8 @@ variables = set()
 procedimientos = {}
 
 def parse(archivo):
-    """Funcion que analiza todas las lineas del archivo dado para evaluar si son validas o no
+    """Funcion que analiza todas las lineas del archivo dado para evaluar si son validas o no, evalua 
+    que tipo de linea es cada uno y llama a otra funcion para hacer esta verificacion
 
     Args:
         filas: archivo que contiene todas las filas a analizar
@@ -29,10 +30,12 @@ def parse(archivo):
 
 
 def parse_variables(fila):
-    """Función que analiza y verifica si las variables estan bien definidas y a almacena en un set
+    """Función que analiza y verifica si las variables estan bien definidas y las almacena en un set
 
     Args:
         fila: fila que contiene la variable que se desea examinar
+        
+        Ejemplo: | nom x y one |
     """
     # Se corrige el formato y verificamos que la variable dada este en minuscula y sea alfanumerica
     variables = fila.strip('|').split()
@@ -48,15 +51,17 @@ def parse_procedimiento(fila):
 
     Args:
         fila: fila que contiene el procedimiento que se desea examinar
+        
+        Ejemplo: proc putChips: n andBalloons: m
     """
     partes = fila.split()
-    # Verificamos si esta bien definido y corregimos su formato
+    # Verificamos si esta bien definido y corregimos su formato elimando partes inecesarias para comprobar su gramatica
     if len(partes) >= 2 and partes[0] == 'proc':
-        proc_name = partes[1].rstrip(':')
-        if proc_name[0].islower() and proc_name.isalnum():
-            procedimientos[proc_name] = []
+        nombre_procedimiento = partes[1].rstrip(':')
+        if nombre_procedimiento[0].islower() and nombre_procedimiento.isalnum():
+            procedimientos[nombre_procedimiento] = []
         else:
-            print(f"Nombre de procedimiento inválido: {proc_name}")
+            print(f"Nombre de procedimiento inválido: {nombre_procedimiento}")
     else:
         print(f"Definición de procedimiento inválida: {fila}")
 
@@ -71,11 +76,12 @@ def parse_instruccion(fila):
     Returns:
         _type_: _description_
     """
-    # Verificamos si se trata de la asignacion de una variable o no
+    # Verificamos si se trata de la asignacion de una variable previamente definida
+    # Ejemplo: "c := n ."
     if ':=' in fila:
-        partes = fila.split(':=')
+        partes = fila.split(':=') # ['c', 'n']
         if len(partes) == 2 and partes[0].strip() in variables:
-            valor = partes[1].strip().rstrip('.')
+            valor = partes[1].strip().rstrip('.') # n
             if valor.isdigit() or valor in variables:
                 return True
             
