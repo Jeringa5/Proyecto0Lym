@@ -11,14 +11,17 @@ def main():
     """
     working = True
     while working:
+        print("-------------------------------------")
         print("0. Salir")
         print("1. Analizador sintáctico (Parser)")
+        print("-------------------------------------")
         inputs = int(input("Ingrese una opcion: "))
 
         # Ejecutar el parser
         if int(inputs)==1:
             while True:
                 nombre_archivo=input("Ingrese el nombre del archivo .txt: ")
+                print("---------------------------------------------")
                 if nombre_archivo.endswith('.txt'):
                     archivo=data_dir+nombre_archivo
                     try:

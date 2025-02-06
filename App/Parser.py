@@ -17,13 +17,17 @@ def parse(archivo):
         fila = fila.strip()
         
         if fila.startswith('|') and fila.endswith('|'):
-            parse_variables(fila)
+            if parse_variables(fila)==False:
+                print(f"Error de sintaxis en la línea: {fila}")
+                return False
             
         elif fila.startswith('proc'):
-            parse_procedimiento(fila)
+            if parse_procedimiento(fila)==False:
+                print(f"Error de sintaxis en la línea: {fila}")
+                return False
             
         elif fila:
-            if not parse_instruccion(fila):
+            if parse_instruccion(fila)==False:
                 print(f"Error de sintaxis en la línea: {fila}")
                 return False
     return True
@@ -38,7 +42,7 @@ def parse_variables(fila):
         Ejemplo: | nom x y one |
     """
     # Se corrige el formato y verificamos que la variable dada este en minuscula y sea alfanumerica
-    vars_encontradas = fila.strip('|').split()
+    vars_encontradas = fila.strip('|').replace(",", "").split()
     
     for var in vars_encontradas:
         if var[0].islower() and var.isalnum():
@@ -82,18 +86,23 @@ def parse_instruccion(fila):
     if ':=' in fila:
         partes = fila.split(':=') # ['c', 'n']
         if len(partes) == 2 and partes[0].strip() in variables:
-            valor = partes[1].strip().rstrip('.') # n
-            if valor.isdigit() or valor in variables:
+            valor = partes[1].strip().rstrip(' .') # n
+            if valor.isalnum() or valor in variables:
                 return True
             
-    elif fila.endswith('.'):
-        comando_completo = fila[:-1].strip().split()
+    if fila in ["[", "]"]:
+        return True
+    
+    else:
+        comando_completo = fila.strip().split()
         if not comando_completo:
             return False
-        comando = comando_completo[0]
+        comando = comando_completo[0].replace(':', "")
+        if "nop" in comando_completo:
+            comando="nop"
 
         # Instrucciones basicas reconocidas por el robot
-        if comando == 'goto' and 'with:' in comando_completo:
+        if comando == 'goTo' and 'with:' in comando_completo:
             return True
         if comando == 'move' and ('toThe:' in comando_completo or 'inDir:' in comando_completo):
             return True
@@ -105,11 +114,11 @@ def parse_instruccion(fila):
             return True
         if comando == 'jump' and ('toThe:' in comando_completo or 'inDir:' in comando_completo):
             return True
-        if comando == 'nop':
+        if comando == "nop":
             return True
 
         # Condicionales y bucles
-        if comando == 'if' and 'then:' in comando_completo and 'else:' in comando_completo:
+        if comando == 'if' and 'then:' in comando_completo and 'else' in comando_completo:
             return True
         if comando == 'while' and 'do:' in comando_completo:
             return True
@@ -119,4 +128,5 @@ def parse_instruccion(fila):
         # Buscamos en los procedimientos previamente guardados
         if comando in procedimientos:
             return True
+        
     return False
