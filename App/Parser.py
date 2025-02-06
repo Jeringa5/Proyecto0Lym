@@ -38,8 +38,9 @@ def parse_variables(fila):
         Ejemplo: | nom x y one |
     """
     # Se corrige el formato y verificamos que la variable dada este en minuscula y sea alfanumerica
-    variables = fila.strip('|').split()
-    for var in variables:
+    vars_encontradas = fila.strip('|').split()
+    
+    for var in vars_encontradas:
         if var[0].islower() and var.isalnum():
             variables.add(var)
         else:
@@ -119,15 +120,3 @@ def parse_instruccion(fila):
         if comando in procedimientos:
             return True
     return False
-
-
-# Leer el archivo de entrada
-with open('robot_program.txt', 'r') as file:
-    archivo = file.readlines()
-
-
-# Verificar la sintaxis del programa del robot
-if parse(archivo):
-    print("La sintaxis es correcta")
-else:
-    print("Se encontraron errores de sintaxis")
