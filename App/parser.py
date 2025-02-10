@@ -12,23 +12,25 @@ def parse(archivo):
     Returns:
         bool: True si no se encontro ningun error, false de lo contrario
     """
+    contador=0
     for fila in archivo:
+        contador+=1
         # Corregimos el formato y vemos que tipo de fila es cada fila
         fila = fila.strip()
         
         if fila.startswith('|') and fila.endswith('|'):
             if parse_variables(fila)==False:
-                print(f"Error de sintaxis en la línea: {fila}")
+                print(f"Error de sintaxis en la fila numero: {contador} en: {fila}")
                 return False
             
         elif fila.startswith('proc'):
             if parse_procedimiento(fila)==False:
-                print(f"Error de sintaxis en la línea: {fila}")
+                print(f"Error de sintaxis en la fila numero: {contador} en: {fila}")
                 return False
             
         elif fila:
             if parse_instruccion(fila)==False:
-                print(f"Error de sintaxis en la línea: {fila}")
+                print(f"Error de sintaxis en la fila numero: {contador} en: {fila}")
                 return False
     return True
 
@@ -104,16 +106,40 @@ def parse_instruccion(fila):
         # Instrucciones basicas reconocidas por el robot
         if comando == 'goTo' and 'with:' in comando_completo:
             return True
+        if comando=="goto":
+            print("Error de gramatica en el comando goto, solucion -> goTo")
+            return False
+        if "with" in comando_completo:
+            print("Error de gramatica en el comando with, solucion -> with:")
+            return False
+    
         if comando == 'move' and ('toThe:' in comando_completo or 'inDir:' in comando_completo):
             return True
+        if "tothe" in comando_completo:
+            print("Error de gramatica en el comando tothe, solucion -> toThe:")
+            return False
+        if "indir" in comando_completo:
+            print("Error de gramatica en el comando indir, solucion -> inDir:")
+            return False
+        
         if comando == 'turn' and any(d in comando_completo for d in ['#left', '#right', '#around']):
             return True
+        
         if comando == 'face' and any(o in comando_completo for o in ['#north', '#south', '#west', '#east']):
             return True
+        
         if comando in ['put', 'pick'] and 'ofType:' in comando_completo:
             return True
+        
         if comando == 'jump' and ('toThe:' in comando_completo or 'inDir:' in comando_completo):
             return True
+        if "tothe" in comando_completo:
+            print("Error de gramatica en el comando tothe, solucion -> toThe:")
+            return False
+        if "indir" in comando_completo:
+            print("Error de gramatica en el comando indir, solucion -> inDir:")
+            return False
+        
         if comando == "nop":
             return True
 
